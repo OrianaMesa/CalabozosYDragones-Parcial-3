@@ -1,0 +1,31 @@
+[2026-11-19 04:01:41] REGISTRO DE AVENTURERO:
+jose (rey magico) | Nv.Total: 4 | Clases: [Guerrero Nv.4] | PG: 3/3 | CA: 5
+----------------------------------------------------------------------
+[2026-11-19 04:04:29] REGISTRO DE AVENTURERO:
+Milenio (El poderoso) | Nv.Total: 4 | Clases: [Clérigo Nv.4] | PG: 16/16 | CA: 10
+----------------------------------------------------------------------
+[2026-11-19 04:04:39] === SIMULACIÓN DE COMBATE TÁCTICO D&D 5E ===
+1. TIRADA DE INICIATIVA (1d20 + Mod. Destreza):
+   - jose: 19 (Mod. DES 1)
+   - Milenio: 2 (Mod. DES 1)
+
+2. ORDEN DE TURNOS ESTABLECIDO:
+   1. jose (19)  2. Milenio (2)  
+
+3. DESARROLLO DEL COMBATE:
+--- RONDA 1 ---
+>>> Turno de jose [Guerrero Nv.4 | Nv. Total 4 | PG 3/3]:
+  * El Guerrero jose usa Oleada de Acción para realizar múltiples ataques físicos continuos (protegido con Armadura Pesada).
+   -> Tirada d20: [7] + 3 = 10 vs CA 10 -> ¡IMPACTO! (Oleada de Acción): -8 PG a Milenio (PG restantes: 8).
+>>> Turno de Milenio [Clérigo Nv.4 | Nv. Total 4 | PG 8/16]:
+  * El Clérigo Milenio invoca a tyr y usa Canalizar Divinidad para curar a sus aliados (+2 PG) y expulsar muertos vivientes.
+   -> Tirada d20: [3] + -3 = 0 vs CA 5 -> FALLO. La defensa de jose bloquea el golpe.
+--- RONDA 2 ---
+>>> Turno de jose [Guerrero Nv.4 | Nv. Total 4 | PG 3/3]:
+  * El Guerrero jose usa Oleada de Acción para realizar múltiples ataques físicos continuos (protegido con Armadura Pesada).
+   -> Tirada d20: [8] + 3 = 11 vs CA 10 -> ¡IMPACTO! (Oleada de Acción): -12 PG a Milenio (PG restantes: 0).
+
+=== RESULTADO FINAL ===
+Vencedor del encuentro: jose con 3/3 PG.
+
+----------------------------------------------------------------------
