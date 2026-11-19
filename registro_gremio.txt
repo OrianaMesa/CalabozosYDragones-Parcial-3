@@ -29,3 +29,33 @@ Milenio (El poderoso) | Nv.Total: 4 | Clases: [Clérigo Nv.4] | PG: 16/16 | CA: 
 Vencedor del encuentro: jose con 3/3 PG.
 
 ----------------------------------------------------------------------
+[2026-11-19 05:28:00] REGISTRO DE AVENTURERO:
+Jhon (el de las montañas) | Nv.Total: 7 | Clases: [Paladín Nv.7] | PG: 8/8 | CA: 9
+----------------------------------------------------------------------
+[2026-11-19 05:28:53] REGISTRO DE AVENTURERO:
+rosie (la linda) | Nv.Total: 7 | Clases: [Clérigo Nv.7] | PG: 8/8 | CA: 9
+----------------------------------------------------------------------
+[2026-11-19 05:29:33] REGISTRO DE AVENTURERO:
+ger (red) | Nv.Total: 7 | Clases: [Guerrero Nv.7] | PG: 8/8 | CA: 9
+----------------------------------------------------------------------
+[2026-11-19 05:48:21] REGISTRO DE AVENTURERO:
+jorge (el magnifico) | Nv.Total: 4 | Clases: [Explorador Nv.4] | PG: 15/15 | CA: 3
+----------------------------------------------------------------------
+[2026-11-19 05:49:19] REGISTRO DE AVENTURERO:
+Magnus (el del bosque) | Nv.Total: 4 | Clases: [Explorador Nv.4] | PG: 15/15 | CA: 3
+----------------------------------------------------------------------
+[2026-11-19 05:51:04] REGISTRO DE AVENTURERO:
+Madeleine (La marquesa) | Nv.Total: 5 | Clases: [Explorador Nv.5] | PG: 4/4 | CA: 4
+----------------------------------------------------------------------
+[2026-11-19 05:53:03] REGISTRO DE AVENTURERO:
+Oriana (La del mar) | Nv.Total: 6 | Clases: [Guerrero Nv.6] | PG: 10/10 | CA: 10
+----------------------------------------------------------------------
+[2026-11-19 05:57:12] REGISTRO DE AVENTURERO:
+oriana (del desierto) | Nv.Total: 3 | Clases: [Guerrero Nv.3] | PG: 9/9 | CA: 5
+----------------------------------------------------------------------
+[2026-11-19 06:00:06] REGISTRO DE AVENTURERO:
+edwin (el profesional) | Nv.Total: 3 | Clases: [Guerrero Nv.3] | PG: 8/8 | CA: 8
+----------------------------------------------------------------------
+[2026-11-19 06:34:47] REGISTRO DE AVENTURERO:
+eliana (de santander) | Nv.Total: 4 | Clases: [Guerrero Nv.2 / Clérigo Nv.2] | PG: 2/2 | CA: 3
+----------------------------------------------------------------------

@@ -9,18 +9,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Aventurero;
-import modelo.Bardo;
-import modelo.Clerigo;
-import modelo.ClasePersonaje;
-import modelo.Explorador;
-import modelo.Guerrero;
-import modelo.HeroeGremio;
-import modelo.Mago;
-import modelo.Monje;
-import modelo.Paladin;
-import modelo.Picaro;
 import modelo.ReglaDndException;
-import persistencia.GestorPersistencia;
 
 /**
  *
@@ -29,27 +18,21 @@ import persistencia.GestorPersistencia;
 public class VistaGremio extends javax.swing.JFrame {
     
     private final GremioControlador controlador;
-    private final ArrayList<String> clasesTemporales;
-    private final ArrayList<Integer> nivelesTemporales;
-    private final ArrayList<String> atributosTemporales;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VistaGremio.class.getName());
 
     /**
      * Creates new form VistaGremio
      */
-    public VistaGremio() {
-        initComponents();
-        this.controlador = new GremioControlador();
-        this.clasesTemporales = new ArrayList<String>();
-        this.nivelesTemporales = new ArrayList<Integer>();
-        this.atributosTemporales = new ArrayList<String>();
+public VistaGremio(GremioControlador controlador) {
+    initComponents();
+    this.controlador = controlador;
 
-        configurarTabla();
-        actualizarEtiquetaAtributo();
-        actualizarResumenClases();
-        actualizarTablaGremio();
-    }
+    configurarTabla();
+    actualizarEtiquetaAtributo();
+    actualizarResumenClases();
+    actualizarTablaGremio();
+}
     
     private void configurarTabla() {
         DefaultTableModel modelo = new DefaultTableModel(
@@ -71,49 +54,11 @@ public class VistaGremio extends javax.swing.JFrame {
         if (seleccion == null) {
             return;
         }
-        String clase = seleccion.toString();
-
-        if (clase.equalsIgnoreCase("Mago")) {
-            lblAtributoEspecial.setText("Espacios de Conjuro (entero):");
-        } else if (clase.equalsIgnoreCase("Guerrero")) {
-            lblAtributoEspecial.setText("Armadura Pesada (texto: si/no):");
-        } else if (clase.equalsIgnoreCase("Clérigo") || clase.equalsIgnoreCase("Clerigo")) {
-            lblAtributoEspecial.setText("Dios Venerado (texto):");
-        } else if (clase.equalsIgnoreCase("Monje")) {
-            lblAtributoEspecial.setText("Puntos de Ki (entero):");
-        } else if (clase.equalsIgnoreCase("Paladín") || clase.equalsIgnoreCase("Paladin")) {
-            lblAtributoEspecial.setText("Puntos de Fuerza (entero):");
-        } else if (clase.equalsIgnoreCase("Explorador")) {
-            lblAtributoEspecial.setText("Enemigo Predilecto (texto):");
-        } else if (clase.equalsIgnoreCase("Pícaro") || clase.equalsIgnoreCase("Picaro")) {
-            lblAtributoEspecial.setText("Herramientas de Ladrón (texto: si/no):");
-        } else if (clase.equalsIgnoreCase("Bardo")) {
-            lblAtributoEspecial.setText("Especialidad Musical (texto):");
-        } else {
-            lblAtributoEspecial.setText("Atributo Especial (texto):");
-        }
+        lblAtributoEspecial.setText(controlador.getEtiquetaAtributoEspecial(seleccion.toString()));
     }
 
     private void actualizarResumenClases() {
-        int sumaNiveles = 0;
-        StringBuilder texto = new StringBuilder();
-
-        for (int i = 0; i < clasesTemporales.size(); i++) {
-            if (i > 0) {
-                texto.append(" + ");
-            }
-            texto.append(clasesTemporales.get(i))
-                 .append(" Nv.")
-                 .append(nivelesTemporales.get(i));
-            sumaNiveles += nivelesTemporales.get(i);
-        }
-
-        if (clasesTemporales.isEmpty()) {
-            lblClasesAsignadas.setText("Clases (0/4 | Nv.Total 0/20): Ninguna clase añadida");
-        } else {
-            lblClasesAsignadas.setText("Clases (" + clasesTemporales.size() + "/4 | Nv.Total "
-                    + sumaNiveles + "/20): " + texto.toString());
-        }
+        lblClasesAsignadas.setText(controlador.getResumenClasesTemporales());
     }
 
     private void actualizarTablaGremio() {
@@ -141,93 +86,13 @@ public class VistaGremio extends javax.swing.JFrame {
         txtNombre.setText("");
         txtTitulo.setText("");
         txtAtributoEspecial.setText("");
-        clasesTemporales.clear();
-        nivelesTemporales.clear();
-        atributosTemporales.clear();
+        controlador.limpiarClasesTemporales();
         actualizarResumenClases();
     }
 
-
-    private Aventurero construirAventureroDesdeFormulario() throws ReglaDndException {
-        String nombre = txtNombre.getText().trim();
-        String titulo = txtTitulo.getText().trim();
-
-        if (nombre.isEmpty()) {
-            throw new ReglaDndException("Debes ingresar el nombre del aventurero.");
-        }
-        if (titulo.isEmpty()) {
-            titulo = "Aventurero del Gremio";
-        }
-        if (clasesTemporales.isEmpty()) {
-            throw new ReglaDndException("Añade al menos una clase antes de registrar al aventurero.");
-        }
-
-        int vidaMax = Integer.parseInt(spnVida.getValue().toString());
-        int ca = Integer.parseInt(spnCA.getValue().toString());
-        int fue = Integer.parseInt(spnFUE.getValue().toString());
-        int des = Integer.parseInt(spnDES.getValue().toString());
-        int con = Integer.parseInt(spnCON.getValue().toString());
-        int intel = Integer.parseInt(spnINT.getValue().toString());
-        int sab = Integer.parseInt(spnSAB.getValue().toString());
-        int car = Integer.parseInt(spnCAR.getValue().toString());
-
-        // El héroe se crea una sola vez y luego se le agregan sus clases (composición).
-        Aventurero aventurero = new HeroeGremio(nombre, vidaMax, ca,
-                fue, des, con, intel, sab, car, titulo);
-
-        for (int i = 0; i < clasesTemporales.size(); i++) {
-            ClasePersonaje clase = crearClase(
-                    clasesTemporales.get(i), nivelesTemporales.get(i), atributosTemporales.get(i));
-            aventurero.agregarClase(clase);
-        }
-
-        return aventurero;
-    }
-
-
-/**
-     * Crea la ClasePersonaje que corresponde al nombre elegido en el combo,
-     * convirtiendo el texto del atributo especial al tipo que necesita cada clase.
-     */
-    private ClasePersonaje crearClase(String clase, int nivel, String atributo) throws ReglaDndException {
-        if (clase.equalsIgnoreCase("Guerrero")) {
-            return new Guerrero(nivel, leerSiNo(atributo, "Armadura pesada"));
-        } else if (clase.equalsIgnoreCase("Mago")) {
-            return new Mago(nivel, leerEntero(atributo, "Espacios de conjuro"));
-        } else if (clase.equalsIgnoreCase("Clérigo") || clase.equalsIgnoreCase("Clerigo")) {
-            return new Clerigo(nivel, atributo);
-        } else if (clase.equalsIgnoreCase("Monje")) {
-            return new Monje(nivel, leerEntero(atributo, "Puntos de Ki"));
-        } else if (clase.equalsIgnoreCase("Paladín") || clase.equalsIgnoreCase("Paladin")) {
-            return new Paladin(nivel, leerEntero(atributo, "Puntos de fuerza"));
-        } else if (clase.equalsIgnoreCase("Explorador")) {
-            return new Explorador(nivel, atributo);
-        } else if (clase.equalsIgnoreCase("Pícaro") || clase.equalsIgnoreCase("Picaro")) {
-            return new Picaro(nivel, leerSiNo(atributo, "Herramientas de ladrón"));
-        } else if (clase.equalsIgnoreCase("Bardo")) {
-            return new Bardo(nivel, atributo);
-        } else {
-            throw new ReglaDndException("Clase no reconocida: " + clase);
-        }
-    }
-
-    private boolean leerSiNo(String texto, String campo) throws ReglaDndException {
-        String t = texto.trim().toLowerCase();
-        if (t.equals("si") || t.equals("sí") || t.equals("s") || t.equals("true")) {
-            return true;
-        }
-        if (t.equals("no") || t.equals("n") || t.equals("false")) {
-            return false;
-        }
-        throw new ReglaDndException("El campo '" + campo + "' debe ser si o no.");
-    }
-
-    private int leerEntero(String texto, String campo) throws ReglaDndException {
-        try {
-            return Integer.parseInt(texto.trim());
-        } catch (NumberFormatException ex) {
-            throw new ReglaDndException("El campo '" + campo + "' debe ser un número entero.");
-        }
+    /** Lee un JSpinner como entero (solo lectura de la interfaz, sin reglas). */
+    private int valor(javax.swing.JSpinner spinner) {
+        return ((Number) spinner.getValue()).intValue();
     }
 
     /**
@@ -362,39 +227,43 @@ public class VistaGremio extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(3, 3, 3)
-                        .addComponent(spnFUE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel9)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(3, 3, 3)
+                                .addComponent(spnFUE, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spnDES)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel11))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spnINT, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel10)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spnSAB)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel12)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnDES, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnCON, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnINT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnSAB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spnCAR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(10, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(spnCAR, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                            .addComponent(spnCON))
+                        .addGap(19, 19, 19))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addGap(17, 17, 17)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(spnFUE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -406,10 +275,10 @@ public class VistaGremio extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(spnINT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10)
                     .addComponent(spnSAB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
-                    .addComponent(spnCAR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spnCAR, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(17, 17, 17))
         );
 
@@ -457,25 +326,7 @@ public class VistaGremio extends javax.swing.JFrame {
                 .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlRegistroLayout.createSequentialGroup()
                         .addGap(17, 17, 17)
-                        .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(pnlRegistroLayout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(spnVida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spnCA, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(pnlRegistroLayout.createSequentialGroup()
-                                .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(pnlRegistroLayout.createSequentialGroup()
                                 .addGap(53, 53, 53)
                                 .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -499,7 +350,25 @@ public class VistaGremio extends javax.swing.JFrame {
                                         .addComponent(btnAgregarClase, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(btnLimpiarClases)))
-                                .addGap(22, 22, 22))))
+                                .addGap(22, 22, 22))
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(pnlRegistroLayout.createSequentialGroup()
+                                .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(pnlRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(pnlRegistroLayout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spnVida, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(spnCA, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(pnlRegistroLayout.createSequentialGroup()
                         .addGap(114, 114, 114)
                         .addComponent(btnRegistrarAventurero)))
@@ -670,7 +539,7 @@ public class VistaGremio extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 15, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -699,23 +568,24 @@ public class VistaGremio extends javax.swing.JFrame {
 
     private void btnRegistrarAventureroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarAventureroActionPerformed
         // TODO add your handling code here:
-        try {
-            Aventurero nuevo = construirAventureroDesdeFormulario();
-            controlador.registrarAventurero(nuevo);
-            actualizarTablaGremio();
-            limpiarFormulario();
-            txtConsola.setText(controlador.generarReporteGremio() + "\n" + controlador.generarReporteCombinaciones());
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Aventurero registrado correctamente en el gremio.",
-                    "Registro exitoso",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        } catch (ReglaDndException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Regla D&D 5e", JOptionPane.WARNING_MESSAGE);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Revisa que los campos numéricos sean válidos.", "Error de formato", JOptionPane.ERROR_MESSAGE);
-        }
+    try {
+    controlador.registrarDesdeFormulario(
+            txtNombre.getText(), txtTitulo.getText(),
+            valor(spnVida), valor(spnCA),
+            valor(spnFUE), valor(spnDES), valor(spnCON),
+            valor(spnINT), valor(spnSAB), valor(spnCAR));
+    actualizarTablaGremio();
+    limpiarFormulario();
+    txtConsola.setText(controlador.generarReporteGremio() + "\n" + controlador.generarReporteCombinaciones());
+    JOptionPane.showMessageDialog(
+            this,
+            "Aventurero registrado correctamente en el gremio.",
+            "Registro exitoso",
+            JOptionPane.INFORMATION_MESSAGE
+    );
+} catch (ReglaDndException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(), "Regla D&D 5e", JOptionPane.WARNING_MESSAGE);
+}
     }//GEN-LAST:event_btnRegistrarAventureroActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -735,84 +605,42 @@ public class VistaGremio extends javax.swing.JFrame {
 
     private void btnReporteNivelesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteNivelesActionPerformed
         // TODO add your handling code here:
+        txtConsola.setText(controlador.generarReporteGremio());
     }//GEN-LAST:event_btnReporteNivelesActionPerformed
 
     private void btnVerHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerHistorialActionPerformed
         // TODO add your handling code here:
-        txtConsola.setText(GestorPersistencia.leerHistorial());
+        txtConsola.setText(controlador.leerHistorial());
     }//GEN-LAST:event_btnVerHistorialActionPerformed
 
     private void btnReporteMulticlaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteMulticlaseActionPerformed
         // TODO add your handling code here:
+        txtConsola.setText(controlador.generarReporteCombinaciones());
     }//GEN-LAST:event_btnReporteMulticlaseActionPerformed
 
     private void btnAgregarClaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClaseActionPerformed
         // TODO add your handling code here:
         try {
-            if (clasesTemporales.size() >= 4) {
-                throw new ReglaDndException("Un aventurero solo puede tener hasta 4 clases.");
-            }
-            String clase = cmbClase.getSelectedItem().toString();
-            int nivelClase = Integer.parseInt(spnNivelClase.getValue().toString());
-            String atributo = txtAtributoEspecial.getText().trim();
-
-            if (nivelClase <= 0) {
-                throw new ReglaDndException("El nivel de la clase debe ser mayor que 0.");
-            }
-            if (atributo.isEmpty()) {
-                throw new ReglaDndException("Debes indicar el atributo especial de la clase.");
-            }
-
-            int sumaActual = 0;
-            for (int i = 0; i < nivelesTemporales.size(); i++) {
-                sumaActual += nivelesTemporales.get(i);
-            }
-            if (sumaActual + nivelClase > 20) {
-                throw new ReglaDndException("El nivel total del aventurero no puede superar 20.");
-            }
-
-            clasesTemporales.add(clase);
-            nivelesTemporales.add(nivelClase);
-            atributosTemporales.add(atributo);
-            txtAtributoEspecial.setText("");
-            actualizarResumenClases();
-        } catch (ReglaDndException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
-        }
+    Object seleccion = cmbClase.getSelectedItem();
+    controlador.agregarClaseTemporal(
+            seleccion == null ? "" : seleccion.toString(),
+            valor(spnNivelClase),
+            txtAtributoEspecial.getText(),
+            valor(spnFUE), valor(spnDES), valor(spnCON),
+            valor(spnINT), valor(spnSAB), valor(spnCAR));
+    txtAtributoEspecial.setText("");
+    actualizarResumenClases();
+} catch (ReglaDndException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(), "Validación", JOptionPane.WARNING_MESSAGE);
+}
     }//GEN-LAST:event_btnAgregarClaseActionPerformed
 
     private void btnLimpiarClasesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarClasesActionPerformed
         // TODO add your handling code here:
-        clasesTemporales.clear();
-        nivelesTemporales.clear();
-        atributosTemporales.clear();
-        actualizarResumenClases();
+        limpiarFormulario();
     }//GEN-LAST:event_btnLimpiarClasesActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new VistaGremio().setVisible(true));
-    }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarClase;
