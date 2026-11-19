@@ -37,5 +37,10 @@ public class Clerigo extends ClasePersonaje {
                 + " y usa Canalizar Divinidad para curar a sus aliados (+" + curacion + " PG) y expulsar muertos vivientes.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModSabiduria(), 1, 8, "Llama Sagrada", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "diosVenerado: " + diosVenerado;
+    }
 }
 

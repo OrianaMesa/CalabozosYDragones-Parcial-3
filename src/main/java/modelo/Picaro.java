@@ -33,4 +33,9 @@ public class Picaro extends ClasePersonaje {
                 + (herramientasLadron ? " [Herramientas de ladrón listas]." : ".");
         return resolverAtaqueD20(atacante, objetivo, atacante.getModDestreza(), dadosFurtivos, 6, "Ataque Furtivo", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "herramientasLadron: " + (herramientasLadron ? "sí" : "no");
+    }
 }

@@ -34,4 +34,9 @@ public class Paladin extends ClasePersonaje {
         String frase = "El Paladín " + atacante.getNombre() + " (Poder: " + puntosFuerza + ") consume magia para imbuir su arma con un Castigo Divino de daño radiante.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModFuerza(), 2, 8, "Castigo Divino", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "puntosFuerza: " + puntosFuerza;
+    }
 }

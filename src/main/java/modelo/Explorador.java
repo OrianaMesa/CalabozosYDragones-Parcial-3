@@ -36,4 +36,9 @@ public class Explorador extends ClasePersonaje {
         String frase = "El Explorador " + atacante.getNombre() + " (experto en " + terrenoFavorecido + ") aplica Marca del Cazador sobre el objetivo para maximizar su daño sostenido.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModDestreza(), 1, 8, "Marca del Cazador (+1d6)", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "terrenoFavorecido: " + terrenoFavorecido;
+    }
 }

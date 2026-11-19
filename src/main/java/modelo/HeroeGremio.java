@@ -18,6 +18,12 @@ public class HeroeGremio extends Aventurero {
         super(nombre, puntosVida, claseArmadura, fuerza, destreza, constitucion, inteligencia, sabiduria, carisma);
         this.tituloGremio = (tituloGremio == null || tituloGremio.trim().isEmpty()) ? "Aventurero de Costa de la Espada" : tituloGremio.trim();
     }
+    
+    
+    @Override
+    public String getTitulo() {
+        return tituloGremio;
+    }
 
     public String getTituloGremio() {
         return tituloGremio;

@@ -35,4 +35,9 @@ public class Guerrero extends ClasePersonaje {
                 + (armaduraPesada ? " (protegido con Armadura Pesada)." : " (estilo ágil).");
         return resolverAtaqueD20(atacante, objetivo, mod, 2, 8, "Oleada de Acción", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "armaduraPesada: " + (armaduraPesada ? "sí" : "no");
+    }
 }

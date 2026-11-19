@@ -127,6 +127,18 @@ public abstract class Aventurero {
     public int getSabiduria() { return sabiduria; }
     public int getCarisma() { return carisma; }
     public List<ClasePersonaje> getClases() { return Collections.unmodifiableList(clases); }
+    
+    /** Título por defecto; HeroeGremio lo sobrescribe con el título del gremio. */
+    public String getTitulo() {
+        return "Aventurero del Gremio";
+    }
+
+    /** Atributo especial de cada clase del aventurero, unidos en un solo texto. */
+    public String getAtributoEspecial() {
+        return clases.stream()
+                .map(c -> c.getNombreClase() + " (" + c.getAtributoEspecial() + ")")
+                .collect(Collectors.joining("; "));
+    }
 
     public abstract String ejecutarTurnoCompleto(Aventurero objetivo);
 }

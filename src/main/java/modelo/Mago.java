@@ -36,5 +36,11 @@ public class Mago extends ClasePersonaje {
         String frase = "El Mago " + atacante.getNombre() + " gasta un espacio de conjuro (restan " + espaciosConjuro + ") para lanzar una poderosa Bola de Fuego.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModInteligencia(), 3, 6, "Bola de Fuego", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "espaciosConjuro: " + espaciosConjuro;
+    }
+   
 }
 

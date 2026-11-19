@@ -35,5 +35,12 @@ public class Monje extends ClasePersonaje {
         String frase = "El Monje " + atacante.getNombre() + " gasta puntos de Ki (restan " + puntosKi + ") para ejecutar una Ráfaga de Golpes y un Ataque Aturdidor.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModDestreza(), 2, 6, "Ráfaga de Golpes", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "puntosKi: " + puntosKi;
+    }
+    
 }
+
 

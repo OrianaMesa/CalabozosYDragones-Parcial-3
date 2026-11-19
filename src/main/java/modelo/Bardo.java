@@ -34,5 +34,10 @@ public class Bardo extends ClasePersonaje {
         String frase = "El Bardo " + atacante.getNombre() + " toca su " + instrumentoMusical + " para otorgar Inspiración Bárdica a un aliado.";
         return resolverAtaqueD20(atacante, objetivo, atacante.getModCarisma(), 1, 6, "Burla Dañina", frase);
     }
+    
+    @Override
+    public String getAtributoEspecial() {
+        return "instrumentoMusical: " + instrumentoMusical;
+    }
 }
 

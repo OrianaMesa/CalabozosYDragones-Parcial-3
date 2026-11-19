@@ -25,6 +25,7 @@ public abstract class ClasePersonaje implements IAccionCombate {
 
     public abstract boolean cumplePrerrequisitoMulticlase(Aventurero av);
     public abstract String getMensajePrerrequisito();
+    public abstract String getAtributoEspecial();
 
     protected String resolverAtaqueD20(Aventurero atacante, Aventurero objetivo, int modAtributo,
                                        int numDados, int carasDado, String nombreHabilidad, String fraseBase) {
